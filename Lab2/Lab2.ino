@@ -47,12 +47,24 @@ void setup()
   httpGETRequest(server);
   // serializeJson(responseDocument, Serial);
   delay(5000);
-  const char* what = responseDocument["name"];
-  Serial.println(what);
-  Serial.println("done");
+  const char* name = responseDocument["name"];
+  u8_t tempo = responseDocument["tempo"];
+  JsonArray notes = responseDocument["melody"];
+  
+  Serial.print("Song Name: ");
+  Serial.println(name);
+  Serial.print("Tempo: "); 
+  Serial.println(tempo);
+
+  for (int note : notes){
+    Serial.println(note);
+    delay(tempo);
+  }
+
 
   // clearPrintToScreen(JSON.stringify(name).c_str());
 
+  Serial.println("done");
 }
 
 void loop()
