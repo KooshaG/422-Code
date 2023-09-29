@@ -1,112 +1,120 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <BluetoothSerial.h>
 
-// #include <Wire.h>
-// #include <Adafruit_GFX.h>
-// #include <Adafruit_SSD1306.h>
+#define BUZZER 21
 
-// #define OLED_ADDRESS    0x3C
-// #define OLED_SDA    4
-// #define OLED_SCL    15
-// #define OLED_RST    16
-// #define SCREEN_WIDTH 128
-// #define SCREEN_HEIGHT 64
-
-// Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RST);
 
 const char* ssid = "Gull";
 const char* pword = "702rlb65";
 
 const char* server = "https://iotjukebox.onrender.com/song";
 
-StaticJsonDocument<12288> responseDocument;
+DynamicJsonDocument responseDocument(21808);
+
+BluetoothSerial BTSerial;
+// static bool btScanAsync = true;
+// static bool btScanSync = true;
 
 void setup()
 {
-  // initOLED();
   Serial.begin(9600);
+  // BTSerial.begin(F("Koosha"));
+  // Serial.println(F("The device started, now you can pair it with bluetooth!"));
 
-  // display.setTextColor(WHITE);
-  // display.setTextSize(1);
-  // display.setCursor(0,0);
+  // if (btScanAsync) {
+  //   Serial.print(F("Starting discoverAsync..."));
+  //   if (BTSerial.discoverAsync(btAdvertisedDeviceFound)) {
+  //     Serial.println(F("Findings will be reported in \"btAdvertisedDeviceFound\""));
+  //     delay(10000);
+  //     Serial.print(F("Stopping discoverAsync... "));
+  //     BTSerial.discoverAsyncStop();
+  //     Serial.println(F("stopped"));
+  //   } else {
+  //     Serial.println(F("Error on discoverAsync f.e. not workin after a \"connect\""));
+  //   }
+  // }
 
   WiFi.begin(ssid, pword);
   while(WiFi.status() != WL_CONNECTED) {
     delay(500);
-    // display.print(".");
   }
-  Serial.println("Connected");
-  // clearPrintToScreen("Connected");
-  // display.println();
-  // display.print(WiFi.localIP());
-  // display.display();
+  Serial.println(F("Connected"));
 
   pinMode(BUILTIN_LED, OUTPUT);
-
-  httpGETRequest(server);
-  // serializeJson(responseDocument, Serial);
-  delay(5000);
-  const char* name = responseDocument["name"];
-  u8_t tempo = responseDocument["tempo"];
-  JsonArray notes = responseDocument["melody"];
-  
-  Serial.print("Song Name: ");
-  Serial.println(name);
-  Serial.print("Tempo: "); 
-  Serial.println(tempo);
-
-  for (int note : notes){
-    Serial.println(note);
-    delay(tempo);
-  }
-
-
-  // clearPrintToScreen(JSON.stringify(name).c_str());
-
-  Serial.println("done");
 }
+
+const char* name;
+u8_t tempo;
+JsonArray melody;
+
+int noteKey, noteDuration;
+int wholeNote;
+bool noteGathered = false;
 
 void loop()
 {
-  digitalWrite(BUILTIN_LED, HIGH);
-  delay(1000);
-  digitalWrite(BUILTIN_LED, LOW);
-  delay(1000);
+  noteKey, noteDuration = 0;
+  noteGathered = false;
 
+  httpGETRequest(server);
+  name = responseDocument["name"]; // name of song
+  tempo = responseDocument["tempo"]; // song tempo
+  melody = responseDocument["melody"]; // melody
+
+  wholeNote = (60000 * 4) / tempo;
+  
+  Serial.print(F("Song Name: "));
+  Serial.println(name);
+  Serial.print(F("Tempo: ")); 
+  Serial.println(tempo);
+
+  for (int note : melody){
+    if (!noteGathered){ // just get the note, do the rest of the processing when we have note and duration
+      noteKey = note;
+      noteGathered = true;
+    }
+    else { // get note duration
+      if (note > 0) noteDuration = (wholeNote) / note;
+      else if (note < 0) {
+        noteDuration = (wholeNote) / abs(note);
+        noteDuration *= 1.5;
+      }
+      else noteDuration = wholeNote;
+      Serial.print(noteKey);
+      Serial.print(F(", "));
+      Serial.print(noteDuration);
+      Serial.print(F(", "));
+      Serial.println(note);
+      // play tone
+      tone(BUZZER, noteKey, noteDuration*0.9);
+      delay(noteDuration);
+      noTone(BUZZER);
+
+      noteGathered = false;
+    }
+  }
 }
-
-// void initOLED()
-// {
-//   pinMode(OLED_RST, OUTPUT);
-//   digitalWrite(OLED_RST, LOW);
-//   delay(20);
-//   digitalWrite(OLED_RST, HIGH);
-//   Wire.begin(OLED_SDA, OLED_SCL);
-//   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3c, false, false)) { // Address 0x3C for 128x32
-//   for(;;); // Don't proceed, loop forever
-//   }
-// }
-
-// void clearPrintToScreen(const char* str)
-// {
-//   display.clearDisplay();
-//   display.setCursor(0,0);
-//   display.print(str);
-//   display.display();
-// }
 
 void httpGETRequest(const char* serverName) {
   HTTPClient http;
+  http.useHTTP10(true);
   http.begin(serverName);
   int httpResponseCode = http.GET();
 
   if (httpResponseCode>0) {
-    DeserializationError err = deserializeJson(responseDocument, http.getString().c_str());
+    DeserializationError err = deserializeJson(responseDocument, http.getStream());
     if (err) {
-      Serial.print("Error: ");
+      Serial.print(F("Error: "));
       Serial.println(err.f_str());
     }
   }
   http.end();
+  Serial.print("Doc size:");
+  Serial.println(responseDocument.memoryUsage());
 }
+
+// void btAdvertisedDeviceFound(BTAdvertisedDevice* pDevice) {
+// 	Serial.printf("Found a device asynchronously: %s\n", pDevice->toString().c_str());
+// }
