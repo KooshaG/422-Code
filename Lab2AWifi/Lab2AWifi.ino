@@ -1,43 +1,31 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <BluetoothSerial.h>
+
 
 #define BUZZER 21
+#define RX2 16
+#define TX2 17
 
 
-const char* ssid = "Gull";
-const char* pword = "702rlb65";
+// const char* ssid = "Gull";
+// const char* pword = "702rlb65";
 
-const char* server = "https://iotjukebox.onrender.com/song";
+const char* ssid = "KG-SURFACE8767";
+const char* pword = "7@As4972";
 
-DynamicJsonDocument responseDocument(21808);
 
-BluetoothSerial BTSerial;
-// static bool btScanAsync = true;
-// static bool btScanSync = true;
+DynamicJsonDocument songResponseDocument(21808); // song with melody
+DynamicJsonDocument preferenceResponseDocument(64); // name : <songname>
 
 void setup()
 {
   Serial.begin(9600);
-  // BTSerial.begin(F("Koosha"));
-  // Serial.println(F("The device started, now you can pair it with bluetooth!"));
-
-  // if (btScanAsync) {
-  //   Serial.print(F("Starting discoverAsync..."));
-  //   if (BTSerial.discoverAsync(btAdvertisedDeviceFound)) {
-  //     Serial.println(F("Findings will be reported in \"btAdvertisedDeviceFound\""));
-  //     delay(10000);
-  //     Serial.print(F("Stopping discoverAsync... "));
-  //     BTSerial.discoverAsyncStop();
-  //     Serial.println(F("stopped"));
-  //   } else {
-  //     Serial.println(F("Error on discoverAsync f.e. not workin after a \"connect\""));
-  //   }
-  // }
+  Serial2.begin(9600);
 
   WiFi.begin(ssid, pword);
   while(WiFi.status() != WL_CONNECTED) {
+    Serial.println("Connecting...");
     delay(500);
   }
   Serial.println(F("Connected"));
@@ -58,10 +46,12 @@ void loop()
   noteKey, noteDuration = 0;
   noteGathered = false;
 
-  httpGETRequest(server);
-  name = responseDocument["name"]; // name of song
-  tempo = responseDocument["tempo"]; // song tempo
-  melody = responseDocument["melody"]; // melody
+  Serial.println(httpGETPreference(1));
+
+  httpGETSong("doom");
+  name = songResponseDocument["name"]; // name of song
+  tempo = songResponseDocument["tempo"]; // song tempo
+  melody = songResponseDocument["melody"]; // melody
 
   wholeNote = (60000 * 4) / tempo;
   
@@ -97,14 +87,15 @@ void loop()
   }
 }
 
-void httpGETRequest(const char* serverName) {
+void httpGETSong(String songname) {
   HTTPClient http;
   http.useHTTP10(true);
-  http.begin(serverName);
+  String url = "https://iotjukebox.onrender.com/song?name=" + songname;
+  http.begin(url);
   int httpResponseCode = http.GET();
 
   if (httpResponseCode>0) {
-    DeserializationError err = deserializeJson(responseDocument, http.getStream());
+    DeserializationError err = deserializeJson(songResponseDocument, http.getStream());
     if (err) {
       Serial.print(F("Error: "));
       Serial.println(err.f_str());
@@ -112,9 +103,23 @@ void httpGETRequest(const char* serverName) {
   }
   http.end();
   Serial.print("Doc size:");
-  Serial.println(responseDocument.memoryUsage());
+  Serial.println(songResponseDocument.memoryUsage());
 }
 
-// void btAdvertisedDeviceFound(BTAdvertisedDevice* pDevice) {
-// 	Serial.printf("Found a device asynchronously: %s\n", pDevice->toString().c_str());
-// }
+String httpGETPreference(const char username) {
+  HTTPClient http;
+  http.useHTTP10(true);
+  String url = "https://iotjukebox.onrender.com/preference?id=40176826&key=" + username;
+  http.begin(url);
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode>0) {
+    DeserializationError err = deserializeJson(preferenceResponseDocument, http.getStream());
+    if (err) {
+      Serial.print(F("Error: "));
+      Serial.println(err.f_str());
+    }
+  }
+  http.end();
+  return preferenceResponseDocument["name"].as<String>();
+}
