@@ -52,26 +52,6 @@ void loop()
   // }
 }
 
-void handleRecieve(){
-  char command = (char)Serial2.read();
-  Serial.println("got command:");
-  switch (command)
-  {
-  case "T":
-    Serial.println("T");
-    break;
-  case "N"
-    Serial.println("N");
-    break;
-  case "P"
-    Serial.println("P");
-    break;
-
-  default:
-    Serial.println("Fail");
-    break;
-  }
-}
 
 void playSong(String songName){
   httpGET(songEndpoint + songName, songResponseDocument);
