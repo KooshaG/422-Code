@@ -8,11 +8,11 @@
 #define RX 26
 #define TX 25
 
-const char* ssid = "Gull";
-const char* pword = "702rlb65";
+// const char* ssid = "Gull";
+// const char* pword = "702rlb65";
 
-// const char* ssid = "KG-SURFACE8767";
-// const char* pword = "7@As4972";
+const char* ssid = "SM-G965W8193";
+const char* pword = "opcb0593";
 
 DynamicJsonDocument songResponseDocument(21808); // song with melody
 DynamicJsonDocument preferenceResponseDocument(64); // name : <songname>
@@ -90,6 +90,7 @@ void handleRecieve(){
     Serial.printf("Song List size: %d, Song List index: %d \n", songList.size(), songIndex);
     break;
   default:
+    Serial.println(command);
     Serial.println("Read Failed");
     break;
   }
