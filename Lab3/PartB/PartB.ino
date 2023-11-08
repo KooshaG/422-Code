@@ -233,14 +233,21 @@ void setup() {
     #endif
 
     // LMIC init
-    os_init();
+    // os_init();
     // Reset the MAC state. Session and pending data transfers will be discarded.
-    LMIC_reset();
+    // LMIC_reset();
 
     // Start job (sending automatically starts OTAA too)
-    do_send(&sendjob);
-}
+    // do_send(&sendjob);
 
+}
+int val = 0;
 void loop() {
-    os_runloop_once();
+    // os_runloop_once();
+    val = analogRead(27);
+    Serial.print(val);
+    if (val>2200) Serial.println(" Detected");
+    else Serial.println("");
+    delay(100);
+
 }
