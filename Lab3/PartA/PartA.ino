@@ -9,8 +9,10 @@
 #include <ESP32Servo.h>
 
 
-const char* ssid = "SM-G965W8193";
-const char* password = "opcb0593";
+// const char* ssid = "SM-G965W8193";
+// const char* password = "opcb0593";
+const char* ssid = "Gull";
+const char* password = "702rlb65";
 
 Servo servo1;
 int minUs = 1000;
