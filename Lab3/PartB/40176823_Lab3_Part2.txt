@@ -86,7 +86,7 @@ static osjob_t servejob;
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
-const unsigned TX_INTERVAL = 30;
+const unsigned TX_INTERVAL = 1;
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
@@ -271,7 +271,6 @@ void handleLogin() {
       mydata[1] = 1;
       sendData = true;
       servo1.write(180);
-      os_setCallback(&sendjob, do_send);
       return;
     }
     msg = "Wrong username/password! try again.";
@@ -279,7 +278,6 @@ void handleLogin() {
     mydata[0] = 10;
     mydata[1] = 0;
     sendData = true;
-    os_setCallback(&sendjob, do_send);
     digitalWrite(GREEN, LOW);
     digitalWrite(RED, HIGH);
     Serial.println("Log in Failed");
@@ -372,6 +370,10 @@ void do_send(osjob_t* j){
         }
         // Next TX is scheduled after TX_COMPLETE event.
     }
+    // else {
+    //   server.handleClient();
+    //   Serial.println("serve");
+    // }
 }
 
 void setup() {
