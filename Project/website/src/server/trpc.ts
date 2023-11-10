@@ -12,6 +12,7 @@ export const createInnerTRPCContext = async (opts: CreateContextOptions) => {
 
   return {
     session,
+    headers: opts.headers,
   };
 };
 

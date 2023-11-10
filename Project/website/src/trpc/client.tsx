@@ -10,16 +10,12 @@ import { type AppRouter } from "@/server";
 export const api = createTRPCReact<AppRouter>({});
 
 export default function TRPCProvider({ children }: { children: React.ReactNode }) {
-  let baseUrl = "help";
-  if (window != undefined) {
-    baseUrl = window.location.origin;
-  } 
   const [queryClient] = useState(() => new QueryClient({}));
   const [trpcClient] = useState(() =>
     api.createClient({
       links: [
         httpBatchLink({
-          url: `${baseUrl}/api/trpc`,
+          url: `${process.env.NEXT_PUBLIC_URL}/api/trpc`,
         }),
       ],
     })
