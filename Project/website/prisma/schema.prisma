@@ -60,10 +60,25 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model DoorbellLog {
+  id Int @id @default(autoincrement())
+
+  time DateTime @default(now())
+
+  message String
+  doorbellId Int
+  doorbell Doorbell @relation(fields: [doorbellId], references: [id], onDelete: Cascade)
+}
+
 model Doorbell {
   id    Int @id @default(autoincrement())
   registrationCode Int
 
-  userId String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  silentStart DateTime?
+  silentEnd DateTime?
+
+  userId String?
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  logs DoorbellLog[]
 }
