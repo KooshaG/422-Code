@@ -28,6 +28,28 @@ export const appRouter = router({
     });
   }),
 
+  getDoorbell: publicProcedure
+  .input(z.object({
+    doorbellId: z.number(),
+    userId: z.string()
+  }))
+  .query(async (opts) => {
+    const doorbellId = opts.input.doorbellId
+    const userId = opts.input.userId
+    const doorbell = await prisma.doorbell.findUnique({
+      where: {
+        id: doorbellId
+      },
+      include: {
+        logs: true
+      }
+    });
+    if (doorbell?.userId === userId) {
+      return doorbell;
+    }
+    return {};
+  }),
+
   createDoorbell: publicProcedure.mutation(async () => {
     return await prisma.doorbell.create({
       data: {
