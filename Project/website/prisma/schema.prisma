@@ -73,6 +73,7 @@ model DoorbellLog {
 model Doorbell {
   id    Int @id @default(autoincrement())
   registrationCode Int
+  name String @default("Doorbell")
 
   silentStart DateTime?
   silentEnd DateTime?
