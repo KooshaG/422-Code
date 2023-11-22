@@ -15,7 +15,7 @@ export default function Home() {
   const [pairDoorbellCode, setPairDoorbellCode] = useState<number>(0)
   const [getDoorbellId, setGetDoorbellId] = useState<number>(0)
 
-  const users = api.user.getAll.useQuery();
+  // const users = api.user.getAll.useQuery();
   const doorbells = api.doorbell.getUserDoorbells.useQuery();
   const createDoorbell = api.doorbell.create.useMutation({
     onSuccess: () => {
