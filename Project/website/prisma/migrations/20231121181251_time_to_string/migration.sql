@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Doorbell" ALTER COLUMN "silentEnd" SET DATA TYPE TEXT,
+ALTER COLUMN "silentStart" SET DATA TYPE TEXT;

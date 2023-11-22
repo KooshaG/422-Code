@@ -8,8 +8,8 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
   // const session = useSession();
   // console.log(session)
-  const users = await api.getUsers.query();
-  const doorbells = await api.getDoorbells.query();
+  const users = await api.user.getAll.query();
+  const doorbells = await api.doorbell.getUserDoorbells.query();
 
 
 
@@ -28,11 +28,9 @@ export default async function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div>
         <p className="text-5xl">Hello {session ? session.user.name : ""}!</p>
+        <p className="text-3xl">Press any of the buttons to start using Any Bell</p>
       </div>
-      <p>{JSON.stringify(session)}</p>
-      {/* <pre>{huh.status}</pre> */}
-      <p>{JSON.stringify(users)}</p>
-      <p>{JSON.stringify(doorbells)}</p>
+      TODO: Add buttons that link same as tabs
     </main>
   )
 }

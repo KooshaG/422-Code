@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { createTRPCReact } from "@trpc/react-query";
 
 import { type AppRouter } from "@/server";
+import SuperJSON from "superjson";
 
 export const api = createTRPCReact<AppRouter>({});
 
@@ -13,6 +14,7 @@ export default function TRPCProvider({ children }: { children: React.ReactNode }
   const [queryClient] = useState(() => new QueryClient({}));
   const [trpcClient] = useState(() =>
     api.createClient({
+      transformer: SuperJSON,
       links: [
         httpBatchLink({
           url: `${process.env.NEXT_PUBLIC_URL}/api/trpc`,
