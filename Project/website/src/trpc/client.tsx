@@ -11,13 +11,14 @@ import SuperJSON from "superjson";
 export const api = createTRPCReact<AppRouter>({});
 
 export default function TRPCProvider({ children }: { children: React.ReactNode }) {
+  const url = process.env.NEXT_PUBLIC_URL?.startsWith("127") ? `${process.env.NEXT_PUBLIC_URL}/api/trpc` : `https://${process.env.NEXT_PUBLIC_URL}/api/trpc` 
   const [queryClient] = useState(() => new QueryClient({}));
   const [trpcClient] = useState(() =>
     api.createClient({
       transformer: SuperJSON,
       links: [
         httpBatchLink({
-          url: `${process.env.NEXT_PUBLIC_URL}/api/trpc`,
+          url: url,
         }),
       ],
     })
