@@ -15,11 +15,10 @@ export default async function DoorbellPage() {
     return redirect("/")
   }
   
-  const doorbells = await api.getDoorbells.query(session.user.id ?? "");
-
+  const doorbells = await api.doorbell.getUserDoorbells.query(session.user.id ?? "");
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center gap-12 p-24">
       <div>
         <h1 className="text-5xl text-left ">Your Doorbells</h1>
       </div>

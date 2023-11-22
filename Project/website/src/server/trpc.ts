@@ -2,7 +2,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { initTRPC, TRPCError, type inferAsyncReturnType } from '@trpc/server';
 import { getServerSession } from 'next-auth/next';
 import { NextRequest } from 'next/server';
-import superjson from 'superjson';
+import { SuperJSON } from 'superjson';
 
 interface CreateContextOptions {
   headers: Headers;
@@ -26,7 +26,7 @@ export const createTRPCContext = async (opts: { req: NextRequest }) => {
 };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson
+  transformer: SuperJSON
 });
 
 const isAuthed = t.middleware(({ next, ctx }) => {

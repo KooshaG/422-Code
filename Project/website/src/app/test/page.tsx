@@ -12,23 +12,27 @@ export default function Home() {
   // console.log(session)
 
   const [ringDoorbellId, setRingDoorbellId] = useState<number>(0)
-  const [pairDoorbellId, setPairDoorbellId] = useState<number>(0)
+  const [pairDoorbellCode, setPairDoorbellCode] = useState<number>(0)
   const [getDoorbellId, setGetDoorbellId] = useState<number>(0)
 
-  const users = api.getUsers.useQuery();
-  const doorbells = api.getDoorbells.useQuery();
-  const createDoorbell = api.createDoorbell.useMutation({
+  const users = api.user.getAll.useQuery();
+  const doorbells = api.doorbell.getUserDoorbells.useQuery();
+  const createDoorbell = api.doorbell.create.useMutation({
     onSuccess: () => {
       doorbells.refetch();
     }
   });
-  const ringDoorbell = api.ringDoorbell.useMutation()
-  const pairDoorbell = api.pairDoorbell.useMutation({
+  const ringDoorbell = api.doorbell.ring.useMutation()
+  const pairDoorbell = api.doorbell.pair.useMutation({
     onSuccess: () => {
       doorbells.refetch();
-    }
+    },
+    onError: (error, variables, context) => {
+    
+      console.log("error", error)
+    },
   });
-  const getDoorbellLogs = api.getDoorbellLogs.useQuery(getDoorbellId, {
+  const getDoorbellLogs = api.doorbell.getLogs.useQuery(getDoorbellId, {
     enabled: false,
   });
   
@@ -80,10 +84,10 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col space-y-3 items-center" id="pair-doorbell">
-      <input type="number" value={pairDoorbellId} onChange={(e) => setPairDoorbellId(parseInt(e.target.value))} placeholder="Doorbell Id" className="input input-bordered w-full max-w-xs" />
+      <input type="number" value={pairDoorbellCode} onChange={(e) => setPairDoorbellCode(parseInt(e.target.value))} placeholder="Doorbell Id" className="input input-bordered w-full max-w-xs" />
         <button 
         onClick={async () => {
-          pairDoorbell.mutate({doorbellId: pairDoorbellId, userId: session.data?.user.id ?? ""})
+          pairDoorbell.mutate({registrationCode: pairDoorbellCode, userId: session.data?.user.id ?? ""})
           }} 
         className="btn btn-neutral">
           Pair doorbell to user

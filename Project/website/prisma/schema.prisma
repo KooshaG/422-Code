@@ -72,11 +72,11 @@ model DoorbellLog {
 
 model Doorbell {
   id    Int @id @default(autoincrement())
-  registrationCode Int
+  registrationCode Int @unique
   name String @default("Doorbell")
 
-  silentStart DateTime?
-  silentEnd DateTime?
+  silentStart String?
+  silentEnd String?
 
   userId String?
   user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)

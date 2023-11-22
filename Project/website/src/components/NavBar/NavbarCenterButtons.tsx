@@ -4,6 +4,7 @@ import { type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { api } from "@/trpc/client";
 
 type Props = {
   session?: Session | null
@@ -15,8 +16,8 @@ const navLinks = [
     name: "Your Doorbells",
   }, 
   {
-    nav: "/settings",
-    name: "Settings",
+    nav: "/add",
+    name: "Add Doorbell",
   },
   {
     nav: "/test",
@@ -27,6 +28,7 @@ const navLinks = [
 export default function NavbarCenterButtons({session}: Props) {
   const pathname = usePathname();
   const { data } = useSession();
+  const utils = api.useUtils();
   if (session === undefined) {
     session = data;
   }
@@ -40,7 +42,7 @@ export default function NavbarCenterButtons({session}: Props) {
     <div className="tabs hidden md:block">
       {navLinks.map(link => {
         return (
-        <Link key={link.nav} href={link.nav} className={`tab md:tab-md lg:tab-lg tab-lifted ${pathname.startsWith(link.nav) ? "tab-active" : ""}`}>
+        <Link key={link.nav} href={link.nav} onClick={() => utils.invalidate()} className={`tab md:tab-md lg:tab-lg tab-lifted ${pathname.startsWith(link.nav) ? "tab-active" : ""}`}>
           {link.name}
         </Link>
         );

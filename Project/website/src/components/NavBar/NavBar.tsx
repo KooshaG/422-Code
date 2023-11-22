@@ -11,8 +11,8 @@ const navLinks = [
     name: "Your Doorbells",
   }, 
   {
-    nav: "/settings",
-    name: "Settings",
+    nav: "/add",
+    name: "Add Doorbell",
   },
   {
     nav: "/test",
