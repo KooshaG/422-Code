@@ -18,9 +18,9 @@ export default async function DoorbellPage() {
   const doorbells = await api.doorbell.getUserDoorbells.query(session.user.id ?? "");
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-12 p-24">
+    <main className="flex min-h-screen flex-col gap-8 p-24">
       <div>
-        <h1 className="text-5xl text-left ">Your Doorbells</h1>
+        <h1 className="text-5xl text-left font-semibold">Your Doorbells</h1>
       </div>
       {/* <p>{JSON.stringify(doorbells)}</p> */}
       <DoorbellList doorbells={doorbells}/>
