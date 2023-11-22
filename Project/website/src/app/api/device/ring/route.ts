@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       await makeLog(doorbell.id, true)
       return Response.json("in time", {status: 200})
     }
-    await makeLog(doorbell.id, true)
+    await makeLog(doorbell.id, false)
     return Response.json("not in silent time", {status: 400})
   }
 
