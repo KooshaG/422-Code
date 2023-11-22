@@ -31,8 +31,10 @@ export async function GET(request: NextRequest) {
 
   if (startTimeHour === endTimeHour && startTimeMinute === endTimeMinute){ // time is same
     if (currentTimeHour === endTimeHour && currentTimeMinute === endTimeMinute){
+      await makeLog(doorbell.id, true)
       return Response.json("in time", {status: 200})
     }
+    await makeLog(doorbell.id, true)
     return Response.json("not in silent time", {status: 400})
   }
 
