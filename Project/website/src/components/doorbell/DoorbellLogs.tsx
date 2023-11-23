@@ -6,7 +6,12 @@ interface DoorbellLogProps {
 
 export default async function DoorbellLogs(props: DoorbellLogProps) {
 
-const logs = props.logs.sort((a,b) => b.time.getTime() - a.time.getTime())
+const logs = process.env.DEPLOYED ? 
+props.logs.sort((a,b) => b.time.getTime() - a.time.getTime()).map((log) => {
+                                                                              log.time = new Date(log.time.getTime() - (1000 * 60 * 60 * 5)) // vercel tz compensation
+                                                                              return log
+                                                                            }) : 
+props.logs.sort((a,b) => b.time.getTime() - a.time.getTime())
 
   if (logs.length === 0) {
     return (
