@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
 
   if (startTimeHour === endTimeHour) {
     // check if current minute is after start and before end
-    if (startTimeMinute > currentTimeMinute || currentTimeMinute < endTimeMinute) {
+    if (startTimeMinute > currentTimeMinute || currentTimeMinute > endTimeMinute) {
       await makeLog(doorbell.id, true)
       return Response.json("yes1", {status: 200})
     }
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     }
   }
   if (currentTimeHour === startTimeHour) {
-    if (currentTimeMinute >= startTimeMinute){
+    if (currentTimeMinute < startTimeMinute){
       await makeLog(doorbell.id, true)
       return Response.json("yes3", {status: 200}) 
     }
@@ -83,14 +83,14 @@ export async function GET(request: NextRequest) {
     return Response.json("no1", {status: 400})
   }
   if (currentTimeHour === endTimeHour) {
-    if (currentTimeMinute <= endTimeMinute) {
+    if (currentTimeMinute > endTimeMinute) {
       await makeLog(doorbell.id, true)
       return Response.json("yes4", {status: 200})
     }
     await makeLog(doorbell.id, false)
     return Response.json("no2", {status: 400})
   }
-  if (currentTimeHour > startTimeHour && currentTimeHour < endTimeHour) {
+  if (currentTimeHour < startTimeHour || currentTimeHour > endTimeHour) {
     // time is between :)
     await makeLog(doorbell.id, true)
     return Response.json("yes2", {status: 200})
