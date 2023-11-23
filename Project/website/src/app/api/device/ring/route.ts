@@ -59,9 +59,13 @@ export async function GET(request: NextRequest) {
     endTimeHour += 24 // put to next day
   }
 
+  console.log("start", startTimeHour, startTimeMinute)
+  console.log("end", endTimeHour, endTimeMinute)
+  console.log("current", currentTimeHour, currentTimeMinute)
+
   if (startTimeHour === endTimeHour) {
     // check if current minute is after start and before end
-    if (startTimeMinute < currentTimeMinute && currentTimeMinute < endTimeMinute) {
+    if (startTimeMinute > currentTimeMinute || currentTimeMinute < endTimeMinute) {
       await makeLog(doorbell.id, true)
       return Response.json("yes1", {status: 200})
     }
