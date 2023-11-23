@@ -22,7 +22,10 @@ export async function GET(request: NextRequest) {
   }
   const [startTimeHour, startTimeMinute] = doorbell.silentStart.split(':').map(x => parseInt(x))
   var [endTimeHour, endTimeMinute] = doorbell.silentEnd.split(':').map(x => parseInt(x))
-  const currentTime = new Date(Date.now())
+  const currentTime = process.env.DEPLOYED ? 
+    new Date(Date.now() - (5 * 60 * 60 * 1000)) : 
+    new Date(Date.now())
+  // const currentTime = new Date(Date.now())
   // const currentTime = new Date(Date.now() - (5 * 60 * 60 * 1000)) // timezone offset
   var currentTimeHour = currentTime.getHours()
   const currentTimeMinute = currentTime.getMinutes()
